@@ -8,7 +8,6 @@
  * 2021-06-02     RTT       the first version
  */
 
-#include "masan.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <rtthread.h>
