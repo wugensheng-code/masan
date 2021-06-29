@@ -34,10 +34,7 @@ static void __asan_report_generic_error(void)
 {
 
       LOG_E("ASAN generic failure");
-//    __asm volatile("bkpt #0"); /* stop application */
-//    for (;;)
-//    {
-//    }
+      __asm volatile("bkpt #0"); /* stop application */
 }
 
 static uint8_t *mem_to_shadow(void *address)
@@ -72,7 +69,7 @@ static rt_bool_t slow_path_check(int8_t shadow_value, void *address, size_t acce
 static void report_error(void *address, size_t access_size, rw_mode_e mode)
 {
     LOG_E("ASAN: Memory access error: addr 0x%x, %s, size: %d bytes", address, mode == k_is_read ? "read " : "write", access_size);
-    //  __asm volatile("bkpt #0"); /* stop application if debugger is attached */
+    __asm volatile("bkpt #0"); /* stop application if debugger is attached */
 }
 
 static void check_shadow(void *address, size_t access_size, rw_mode_e mode)
