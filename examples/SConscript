@@ -10,6 +10,6 @@ LOCAL_CCFLAGS = ''
 if rtconfig.CROSS_TOOL == 'gcc':
     LOCAL_CCFLAGS += ' -fsanitize=kernel-address'
 
-group = DefineGroup('ASan', src, depend = ['PKG_USING_MASAN'], CPPPATH = CPPPATH, LOCAL_CCFLAGS = LOCAL_CCFLAGS)
+group = DefineGroup('masan', src, depend = ['PKG_USING_MASAN'], CPPPATH = CPPPATH, LOCAL_CCFLAGS = LOCAL_CCFLAGS)
 
 Return('group')
