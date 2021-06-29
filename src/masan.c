@@ -224,13 +224,13 @@ void __asan_store16_noabort(void *address)
 void __asan_loadN_noabort(void *address)
 {
     LOG_I("The entry of __asan_loadN_noabort");
-    check_shadow(address, N, k_is_read);
+    check_shadow(address, 0, k_is_read);
 }
 
 void __asan_storeN_noabort(void *address)
 {
     LOG_I("The entry of __asan_storeN_noabort");
-    check_shadow(address, N, k_is_write);
+    check_shadow(address, 0, k_is_write);
 }
 
 void __asan_exp_load1(void *address)
