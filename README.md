@@ -36,7 +36,8 @@ hello package 遵循 LGPLv2.1 许可，详见 `LICENSE` 文件。
 ### 1.3 依赖
 
 - RT-Thread 3.0+
-- ulog 日志
+- arm-none-eabi-gcc 5.4.1
+- CmBacktrace
 
 ## 2、如何打开ASan
 
