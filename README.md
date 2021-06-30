@@ -57,7 +57,7 @@ RT-Thread online packages
 
 目前只能针对单个源文件进行错误检查，给asan_test.c在这个位置加入编译选项	-fsanitize=kernel-address
 
-![image-20210610162002521](C:\Users\RTT\Documents\Sanitizer\MASan\doc\img1.png)
+![image-20210610162002521](.\doc\img1.png)
 
 ## 5、联系方式 & 感谢
 
