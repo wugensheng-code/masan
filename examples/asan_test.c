@@ -12,61 +12,84 @@
 #include <stdint.h>
 #include <rtthread.h>
 
-#define THREAD_STACK_SIZE   1024
-#define THREAD_PRIORITY     20
-#define THREAD_TIMESLICE    10
+int global_array[5] = {-1};
 
-static rt_thread_t masan_pid = RT_NULL;
-static rt_uint16_t arr[] = {1,2,3};
-static rt_uint16_t *p = &arr[0];
-
-static void test1(void)
+/* Use after free (dangling pointer dereference) */
+static void use_after_free(void)
 {
-  p = rt_malloc(16);
-  rt_free(p);
-  arr[0] = *p;
-  *p = 0;  /* BOOM: access to released memory */
+    rt_uint16_t arr[] = {1,2,3};
+    rt_uint16_t *p = arr;
+
+    p = rt_malloc(5);
+    rt_free(p);
+    arr[0] = *p;
+    *p = 0;  /* BOOM: access to released memory */
 }
 
-static int test2(void)
+/* Heap buffer overflow */
+static void heap_buffer_overflow(void)
 {
-  int i, *p;
-  uint8_t c;
+    int i, *p;
+    uint8_t c;
 
-  p = rt_malloc(10);
-  c = *((uint8_t*)p);
-  for(int j=0; j<10; j++) {
-    p[j] = j; /* BOOM: accessing beyond allocated memory */
-  }
-  rt_free(p);
-  i = *p; /* BOOM: access to released memory! */
-  return i+c;
+    p = rt_malloc(10);
+    c = *((uint8_t*)p);
+    for(int j=0; j<10; j++) {
+      p[j] = j; /* BOOM: accessing beyond allocated memory */
+    }
+    rt_free(p);
+    i = *p; /* BOOM: access to released memory! */
 }
 
-static void test3(void)
+/* Stack buffer overflow */
+static void stack_buffer_overflow(void)
 {
     char a[3] = {'#'};
     a[6] = '*';
-
+    a[2] = a[6];
 }
 
-static void ASAN_Test(void *param)
+static void global_buffer_overflow(void)
 {
-  test1();
-  test2();
-  test3();
+    global_array[5] = global_array[8];  /* BOOM */
 }
 
-int masan_sample(void)
+
+static void masan_sample(int argc, char**argv)
 {
-    masan_pid = rt_thread_create("masan_sample",
-                            ASAN_Test, RT_NULL,
-                            THREAD_STACK_SIZE,
-                            THREAD_PRIORITY, THREAD_TIMESLICE);
+    if (argc < 2)
+    {
+        rt_kprintf("Please input: 'masan_sample<use_after_free|heap_buffer_overflow|stack_buffer_overflow|global_buffer_overflow>'\n");
+        return;
+    }
 
-    if (masan_pid != RT_NULL)
-        rt_thread_startup(masan_pid);
-    return 0;
+    if (!rt_strcmp(argv[1], "use_after_free"))
+    {
+        rt_kprintf(
+                "\0\0static void use_after_free(void)\n"
+                "\0\0{\n"
+                "\0\0\0\0rt_uint16_t arr[] = {1,2,3};\n"
+                "\0\0\0\0rt_uint16_t *p = arr;\n"
+                "\0\0\0\0p = rt_malloc(5);\n"
+                "\0\0\0\0rt_free(p);\n"
+                "\0\0\0\0arr[0] = *p;\n"
+                "\0\0\0\0*p = 0;  /* BOOM: access to released memory */\n"
+                "\0\0}\n"
+                );
+        use_after_free();
+    }
+    else if (!rt_strcmp(argv[1], "heap_buffer_overflow"))
+    {
+        heap_buffer_overflow();
+    }
+    else if(!rt_strcmp(argv[1], "stack_buffer_overflow"))
+    {
+        stack_buffer_overflow();
+    }
+    else if (!rt_strcmp(argv[1], "global_buffer_overflow"))
+    {
+        global_buffer_overflow();
+    }
 }
 
-MSH_CMD_EXPORT(masan_sample, masan_sample);
+MSH_CMD_EXPORT(masan_sample, masan_sample: masan_sample<use_after_free|heap_buffer_overflow|stack_buffer_overflow|global_buffer_overflow>);
