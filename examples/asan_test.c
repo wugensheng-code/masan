@@ -59,23 +59,12 @@ static void masan_sample(int argc, char**argv)
 {
     if (argc < 2)
     {
-        rt_kprintf("Please input: 'masan_sample<use_after_free|heap_buffer_overflow|stack_buffer_overflow|global_buffer_overflow>'\n");
+        rt_kprintf("Please input: 'masan_sample <use_after_free|heap_buffer_overflow|stack_buffer_overflow|global_buffer_overflow>'\n");
         return;
     }
 
     if (!rt_strcmp(argv[1], "use_after_free"))
     {
-        rt_kprintf(
-                "\0\0static void use_after_free(void)\n"
-                "\0\0{\n"
-                "\0\0\0\0rt_uint16_t arr[] = {1,2,3};\n"
-                "\0\0\0\0rt_uint16_t *p = arr;\n"
-                "\0\0\0\0p = rt_malloc(5);\n"
-                "\0\0\0\0rt_free(p);\n"
-                "\0\0\0\0arr[0] = *p;\n"
-                "\0\0\0\0*p = 0;  /* BOOM: access to released memory */\n"
-                "\0\0}\n"
-                );
         use_after_free();
     }
     else if (!rt_strcmp(argv[1], "heap_buffer_overflow"))
