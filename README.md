@@ -59,6 +59,20 @@ RT-Thread online packages
 
 ![image-20210610162002521](./doc/img1.png)
 
+## 4、关于examples
+
+examples目录下放了以下示例：
+
+1. use_after_free
+
+2. heap_buffer_overflow
+
+3. stack_buffer_overflow
+
+4. global_buffer_overflow
+
+   结合CmBacktrace可以看到错误发生时的调用栈，以帮助开发人员定位错误
+
 ## 5、联系方式 & 感谢
 
 * 维护：shinu
