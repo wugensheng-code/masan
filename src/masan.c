@@ -15,6 +15,16 @@
 #define LOG_LVL LOG_LVL_ERROR
 #include <rtdbg.h>
 
+#if defined(__CC_ARM)
+    #error "not supported compiler"
+#elif defined(__ICCARM__)
+    #error "not supported compiler"
+#elif defined(__GNUC__)
+#else
+    #error "not supported compiler"
+#endif
+
+
 #ifdef __cplusplus
 extern "C"
 #endif
